@@ -9,15 +9,24 @@ export default class Ball {
         this.radius = radius;
     }
 
-    static randomInside(hexagon) {
+    setSpeed(speed) {
+        const angle = Math.atan2(this.vy, this.vx);
+        this.vx = Math.cos(angle) * speed;
+        this.vy = Math.sin(angle) * speed;
+    }
+
+    setRadius(r) {
+        this.radius = r;
+    }
+
+    static randomInside(hexagon, speed = 100, radius = 5) {
         const angle = Math.random() * Math.PI * 2;
         const r = hexagon.radius * Math.sqrt(Math.random());
         const x = hexagon.cx + r * Math.cos(angle);
         const y = hexagon.cy + r * Math.sin(angle);
-        const speed = 100;
         const vx = (Math.random() * 2 - 1) * speed;
         const vy = (Math.random() * 2 - 1) * speed;
-        return new Ball(x, y, vx, vy);
+        return new Ball(x, y, vx, vy, radius);
     }
 
     update(dt, outerHexagon, innerHexagon = null) {
