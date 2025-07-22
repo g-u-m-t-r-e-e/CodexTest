@@ -1,13 +1,14 @@
 import { rotatePoint } from './utils.js';
 
 export default class Hexagon {
-    constructor(cx, cy, radius, omega = 0, missingSide = null) {
+    constructor(cx, cy, radius, omega = 0, missingSide = null, highlightSide = null) {
         this.cx = cx;
         this.cy = cy;
         this.radius = radius;
         this.angle = 0;
         this.omega = omega;
         this.missingSide = missingSide; // null or 0-5 to indicate which side to omit
+        this.highlightSide = highlightSide; // null or 0-5 to indicate side drawn differently
         this.points = this.calculatePoints();
     }
 
@@ -42,38 +43,25 @@ export default class Hexagon {
         }
         const edges = [];
         for (let i = 0; i < 6; i++) {
-            // Skip the missing side if specified
             if (this.missingSide !== null && i === this.missingSide) {
                 continue;
             }
-            edges.push([rotated[i], rotated[(i + 1) % 6]]);
+            edges.push({ p1: rotated[i], p2: rotated[(i + 1) % 6], index: i });
         }
         return edges;
     }
 
     draw(ctx, strokeStyle = '#0f0') {
         ctx.save();
-        ctx.strokeStyle = strokeStyle;
         ctx.lineWidth = 2;
-        ctx.beginPath();
-        
         const edges = this.edges();
-        if (edges.length > 0) {
-            // Start from the first edge's first point
-            ctx.moveTo(edges[0][0].x, edges[0][0].y);
-            
-            // Draw each edge
-            for (const [p1, p2] of edges) {
-                ctx.lineTo(p2.x, p2.y);
-            }
-            
-            // Only close the path if no side is missing
-            if (this.missingSide === null) {
-                ctx.closePath();
-            }
+        for (const { p1, p2, index } of edges) {
+            ctx.beginPath();
+            ctx.moveTo(p1.x, p1.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.strokeStyle = (this.highlightSide !== null && index === this.highlightSide) ? '#f00' : strokeStyle;
+            ctx.stroke();
         }
-        
-        ctx.stroke();
         ctx.restore();
     }
 }
