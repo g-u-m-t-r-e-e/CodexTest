@@ -7,6 +7,29 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div id="controls">
+        <label>Balls: <span id="ballsValue"></span>
+            <input id="balls" type="range" min="1" max="100" value="10">
+        </label>
+        <label>Outer Speed: <span id="outerSpeedValue"></span>
+            <input id="outerSpeed" type="range" min="-6.28" max="6.28" step="0.01" value="0.39">
+        </label>
+        <label>Inner Speed: <span id="innerSpeedValue"></span>
+            <input id="innerSpeed" type="range" min="-6.28" max="6.28" step="0.01" value="-0.39">
+        </label>
+        <label>Outer Scale: <span id="outerScaleValue"></span>
+            <input id="outerScale" type="range" min="0.1" max="0.9" step="0.01" value="0.5">
+        </label>
+        <label>Inner Ratio: <span id="innerRatioValue"></span>
+            <input id="innerRatio" type="range" min="0.3" max="0.9" step="0.01" value="0.6">
+        </label>
+        <label>Ball Speed: <span id="ballSpeedValue"></span>
+            <input id="ballSpeed" type="range" min="10" max="300" step="1" value="100">
+        </label>
+        <label>Ball Radius: <span id="ballRadiusValue"></span>
+            <input id="ballRadius" type="range" min="2" max="20" step="0.5" value="5">
+        </label>
+    </div>
     <canvas id="canvas"></canvas>
     <script type="module" src="src/main.js"></script>
 </body>
