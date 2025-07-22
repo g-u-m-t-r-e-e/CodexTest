@@ -1,0 +1,13 @@
+{
+  "name": "hexagonbounce",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "jest",
+    "lint": "eslint src __tests__"
+  },
+  "devDependencies": {
+    "eslint": "^8.56.0",
+    "jest": "^29.6.4"
+  }
+}
