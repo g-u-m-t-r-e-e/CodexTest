@@ -8,7 +8,8 @@ export const ctx = canvas.getContext('2d');
 let last = 0;
 let fps = 0;
 let fpsInterval = 0;
-let hexagon;
+let outerHexagon;
+let innerHexagon;
 const balls = [];
 const NUM_BALLS = 10;
 const ROTATION_SPEED = Math.PI / 8; // rad/sec
@@ -20,14 +21,32 @@ function resize() {
 
 function init() {
     resize();
-    hexagon = new Hexagon(canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height) / 4, ROTATION_SPEED);
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    const outerRadius = Math.min(canvas.width, canvas.height) / 4;
+    const innerRadius = outerRadius * 0.6; // Inner hexagon is 60% the size
+    
+    // Create outer hexagon (complete)
+    outerHexagon = new Hexagon(centerX, centerY, outerRadius, ROTATION_SPEED);
+    
+    // Create inner hexagon with missing side (side 0 is missing for the gap)
+    innerHexagon = new Hexagon(centerX, centerY, innerRadius, -ROTATION_SPEED, 0);
+    
     for (let i = 0; i < NUM_BALLS; i++) {
-        balls.push(Ball.randomInside(hexagon));
+        balls.push(Ball.randomInside(outerHexagon));
     }
+    
     window.addEventListener('resize', () => {
         resize();
-        hexagon.setRadius(Math.min(canvas.width, canvas.height) / 4);
-        hexagon.setCenter(canvas.width / 2, canvas.height / 2);
+        const newOuterRadius = Math.min(canvas.width, canvas.height) / 4;
+        const newInnerRadius = newOuterRadius * 0.6;
+        const newCenterX = canvas.width / 2;
+        const newCenterY = canvas.height / 2;
+        
+        outerHexagon.setRadius(newOuterRadius);
+        outerHexagon.setCenter(newCenterX, newCenterY);
+        innerHexagon.setRadius(newInnerRadius);
+        innerHexagon.setCenter(newCenterX, newCenterY);
     });
     requestAnimationFrame(loop);
 }
@@ -48,15 +67,18 @@ function loop(timestamp) {
 }
 
 function update(dt) {
-    hexagon.update(dt);
+    outerHexagon.update(dt);
+    innerHexagon.update(dt);
     for (const b of balls) {
-        b.update(dt, hexagon);
+        b.update(dt, outerHexagon, innerHexagon);
     }
 }
 
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    hexagon.draw(ctx);
+    outerHexagon.draw(ctx); // Green outer hexagon
+    innerHexagon.draw(ctx, '#ff0'); // Yellow inner hexagon
+    
     for (const b of balls) {
         b.draw(ctx);
     }

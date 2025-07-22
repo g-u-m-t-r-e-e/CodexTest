@@ -1,12 +1,13 @@
 import { rotatePoint } from './utils.js';
 
 export default class Hexagon {
-    constructor(cx, cy, radius, omega = 0) {
+    constructor(cx, cy, radius, omega = 0, missingSide = null) {
         this.cx = cx;
         this.cy = cy;
         this.radius = radius;
         this.angle = 0;
         this.omega = omega;
+        this.missingSide = missingSide; // null or 0-5 to indicate which side to omit
         this.points = this.calculatePoints();
     }
 
@@ -41,22 +42,37 @@ export default class Hexagon {
         }
         const edges = [];
         for (let i = 0; i < 6; i++) {
+            // Skip the missing side if specified
+            if (this.missingSide !== null && i === this.missingSide) {
+                continue;
+            }
             edges.push([rotated[i], rotated[(i + 1) % 6]]);
         }
         return edges;
     }
 
-    draw(ctx) {
+    draw(ctx, strokeStyle = '#0f0') {
         ctx.save();
-        ctx.strokeStyle = '#0f0';
+        ctx.strokeStyle = strokeStyle;
         ctx.lineWidth = 2;
         ctx.beginPath();
-        const pts = this.edges().map(e => e[0]);
-        ctx.moveTo(pts[0].x, pts[0].y);
-        for (let i = 1; i < pts.length; i++) {
-            ctx.lineTo(pts[i].x, pts[i].y);
+        
+        const edges = this.edges();
+        if (edges.length > 0) {
+            // Start from the first edge's first point
+            ctx.moveTo(edges[0][0].x, edges[0][0].y);
+            
+            // Draw each edge
+            for (const [p1, p2] of edges) {
+                ctx.lineTo(p2.x, p2.y);
+            }
+            
+            // Only close the path if no side is missing
+            if (this.missingSide === null) {
+                ctx.closePath();
+            }
         }
-        ctx.closePath();
+        
         ctx.stroke();
         ctx.restore();
     }
